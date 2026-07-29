@@ -3,17 +3,19 @@
 #include "game.h"
 
 int main(void)
-{
-	printf("Hello CMake!\n");
-	
-	Game game = {
-		.state = MENU,
-		.is_running = true
-	};
+{	
+	Game game;
 	
 	if (!game_create(&game))
 		return EXIT_FAILURE;
+	
+	while (game.is_running)
+	{
+		game_loop(&game);
+	}
+	
 	game_destroy(&game);
 	
+	printf("Exited successfully!\n");
 	return EXIT_SUCCESS;
 }

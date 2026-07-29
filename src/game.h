@@ -22,7 +22,6 @@ typedef struct
 
 bool game_create(Game *game);
 void game_destroy(Game *game);
-bool init_sdl(Game *game);
-void deinit_sdl(Game *game);
+void game_loop(Game *game);
 
 #endif
