@@ -11,4 +11,11 @@
 #define WINDOW_FLAGS SDL_WINDOW_RESIZABLE
 #define RENDER_FLAGS 0
 
+#define BIRD_SCALE 5
+#define BIRD_GRAVITY_FORCE 1.0f
+#define BIRD_MAX_Y_VEL 50.0f
+#define BIRD_JUMP_FORCE -20.0f
+
+#define FOREGROUND_X_SPEED -5
+
 #endif

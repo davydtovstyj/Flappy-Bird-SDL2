@@ -22,6 +22,14 @@ void update_input(Action *action)
 				{
 					case SDL_SCANCODE_ESCAPE:
 						action->quit = true;
+						break;
+
+					case SDL_SCANCODE_SPACE:
+						action->jump = true;
+						break;
+
+					default:
+						break;
 				}
 				break;
 			

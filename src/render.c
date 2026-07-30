@@ -4,14 +4,24 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-void render_frame(SDL_Renderer *renderer, SDL_Texture *background)
+void render_present(SDL_Renderer *renderer)
+{	
+	SDL_RenderPresent(renderer);
+}
+
+void render_clear(SDL_Renderer *renderer)
 {
 	SDL_RenderClear(renderer);
+}
 
-	// Render background
+void render_sprite(SDL_Renderer *renderer, SDL_Texture *sprite, SDL_Rect *sprite_rect)
+{
+	SDL_RenderCopy(renderer, sprite, NULL, sprite_rect);
+}
+
+void render_background(SDL_Renderer *renderer, SDL_Texture *background)
+{
 	SDL_RenderCopy(renderer, background, NULL, NULL);
-	
-	SDL_RenderPresent(renderer);
 }
 
 bool init_sdl()

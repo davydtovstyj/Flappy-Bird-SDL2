@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 #include <SDL2/SDL.h>
+#include "assets.h"
+#include "sprites.h"
 
 typedef enum 
 {
@@ -15,7 +17,11 @@ typedef struct
 {
 	SDL_Window *window;
 	SDL_Renderer *renderer;
-	SDL_Texture *background;
+
+	Assets assets;
+
+	Bird bird;
+	Ground grounds[2];
 	
 	State state;
 	bool is_running;
@@ -24,5 +30,7 @@ typedef struct
 bool game_create(Game *game);
 void game_destroy(Game *game);
 void game_loop(Game *game);
+void update(Game *game);
+bool is_colide(Game *game);
 
 #endif

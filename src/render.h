@@ -4,7 +4,10 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 
-void render_frame(SDL_Renderer *renderer, SDL_Texture *background);
+void render_present(SDL_Renderer *renderer);
+void render_clear(SDL_Renderer *renderer);
+void render_background(SDL_Renderer *renderer, SDL_Texture *background);
+void render_sprite(SDL_Renderer *renderer, SDL_Texture *sprite, SDL_Rect *sprite_rect);
 bool init_sdl();
 void deinit_sdl();
 SDL_Window *create_window();
