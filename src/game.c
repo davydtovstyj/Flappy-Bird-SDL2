@@ -1,33 +1,23 @@
 #include "game.h"
 #include "render.h"
+#include "input.h"
+#include "assets.h"
 
 void game_loop(Game *game)
 {
-	// TODO: make module for input handling
-	SDL_Event event;
-
-	while(SDL_PollEvent(&event) != 0)
-	{
-		switch (event.type)
-		{
-			case SDL_QUIT:
-				game->is_running = false;
-				break;
-			default:
-				break;
-		}
-	}
+	Action action;
+	update_input(&action);
 	
-	// Update and Present 
-	// TODO: move this to render module
-	SDL_RenderClear(game->renderer);
-	SDL_RenderPresent(game->renderer);
+	if (action.quit)
+		game->is_running = false;
+	
+	render_frame(game->renderer, game->background);
 }
 
 bool game_create(Game *game)
 {
 	// Initialize game values
-	game->state = MENU;
+	game->state = PLAYING;
 	game->is_running = true;
 	game->window = NULL;
 	game->renderer = NULL;
@@ -39,7 +29,22 @@ bool game_create(Game *game)
 	}
 	
 	// Initialize all window and render related
-	if (!create_window(game) || !create_renderer(game))
+	game->window = create_window();
+	if (game->window == NULL)
+	{
+		game_destroy(game);
+		return false;
+	}
+
+	game->renderer = create_renderer(game->window);
+	if (game->renderer == NULL)
+	{
+		game_destroy(game);
+		return false;
+	}
+
+	game->background = load_background(game->renderer);
+	if (game->background == NULL)
 	{
 		game_destroy(game);
 		return false;
@@ -50,7 +55,9 @@ bool game_create(Game *game)
 
 void game_destroy(Game *game)
 {
-	destroy_renderer(game);
-	destroy_window(game);
+	// TODO: assets struct for managing textures and surfaces
+	destroy_assets(game->background);
+	destroy_renderer(game->renderer);
+	destroy_window(game->window);
 	deinit_sdl();
 }

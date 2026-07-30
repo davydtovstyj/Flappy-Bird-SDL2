@@ -6,7 +6,7 @@
 
 typedef enum 
 {
-	MENU,
+//	MENU,
 	PLAYING,
 	GAME_OVER
 } State;
@@ -15,6 +15,7 @@ typedef struct
 {
 	SDL_Window *window;
 	SDL_Renderer *renderer;
+	SDL_Texture *background;
 	
 	State state;
 	bool is_running;

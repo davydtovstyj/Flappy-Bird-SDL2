@@ -2,12 +2,29 @@
 #include "config.h"
 #include <stdbool.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
+void render_frame(SDL_Renderer *renderer, SDL_Texture *background)
+{
+	SDL_RenderClear(renderer);
+
+	// Render background
+	SDL_RenderCopy(renderer, background, NULL, NULL);
+	
+	SDL_RenderPresent(renderer);
+}
 
 bool init_sdl()
 {
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+	if (SDL_Init(SDL_INIT_FLAGS) != 0)
 	{
 		fprintf(stderr, "Error initializing SDL: %s\n", SDL_GetError());
+		return false;
+	}
+
+	if ((IMG_Init(IMG_INIT_FLAGS) & IMG_INIT_FLAGS) != IMG_INIT_FLAGS)
+	{
+		fprintf(stderr, "Error initializing SDL_image: %s\n", IMG_GetError());
 		return false;
 	}
 	
@@ -16,46 +33,54 @@ bool init_sdl()
 
 void deinit_sdl()
 {
+	IMG_Quit();
 	SDL_Quit();
 }
 
-bool create_window(Game *game)
+SDL_Window *create_window()
 {
-	game->window = SDL_CreateWindow(
+	SDL_Window *window = SDL_CreateWindow(
 		WINDOW_TITLE, 
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		WINDOW_WIDTH,
-		WINDOW_HEIGHT,
+		WINDOW_WIDTH/2,
+		WINDOW_HEIGHT/2,
 		WINDOW_FLAGS
 		);
-	if (game->window == NULL)
+	if (window == NULL)
 	{
 		fprintf(stderr, "Error creating window: %s\n", SDL_GetError());
-		return false;
+		return NULL;
 	}
 	
-	return true;
+	return window;
 }
 
-void destroy_window(Game *game)
+void destroy_window(SDL_Window *window)
 {
-	SDL_DestroyWindow(game->window);
+	SDL_DestroyWindow(window);
 }
 
-bool create_renderer(Game *game)
+SDL_Renderer *create_renderer(SDL_Window *window)
 {
-	game->renderer = SDL_CreateRenderer(game->window, -1, RENDER_FLAGS);
-	if (game->renderer == NULL)
+	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, RENDER_FLAGS);
+	if (renderer == NULL)
 	{
 		fprintf(stderr, "Error creating renderer: %s\n", SDL_GetError());
-		return false;
+		return NULL;
+	}
+
+	// Keep game aspect ratio same
+	if (SDL_RenderSetLogicalSize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT) != 0)
+	{
+		fprintf(stderr, "Error setting logical size for renderer: %s\n", SDL_GetError());
+		return NULL;
 	}
 	
-	return true;
+	return renderer;
 }
 
-void destroy_renderer(Game *game)
+void destroy_renderer(SDL_Renderer *renderer)
 {
-	SDL_DestroyRenderer(game->renderer);
+	SDL_DestroyRenderer(renderer);
 }
