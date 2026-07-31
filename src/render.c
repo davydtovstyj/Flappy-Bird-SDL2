@@ -14,9 +14,9 @@ void render_clear(SDL_Renderer *renderer)
 	SDL_RenderClear(renderer);
 }
 
-void render_sprite(SDL_Renderer *renderer, SDL_Texture *sprite, SDL_Rect *sprite_rect)
+void render_sprite(SDL_Renderer *renderer, SDL_Texture *sprite, SDL_Rect *sprite_rect, const double angle, SDL_RendererFlip flip)
 {
-	SDL_RenderCopy(renderer, sprite, NULL, sprite_rect);
+	SDL_RenderCopyEx(renderer, sprite, NULL, sprite_rect, angle, NULL, flip);
 }
 
 void render_background(SDL_Renderer *renderer, SDL_Texture *background)

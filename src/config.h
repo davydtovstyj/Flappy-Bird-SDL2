@@ -12,9 +12,17 @@
 #define RENDER_FLAGS 0
 
 #define BIRD_SCALE 5
+#define BIRD_X_MARGIN 100
 #define BIRD_GRAVITY_FORCE 1.0f
+#define BIRD_START_Y_VEL 1.0f
 #define BIRD_MAX_Y_VEL 50.0f
-#define BIRD_JUMP_FORCE -20.0f
+#define BIRD_JUMP_FORCE -15.0f
+
+#define MAX_PIPES_COUNT 3
+#define PIPE_SCALE 5
+#define DISTANCE_BETWEEN_PIPES 500
+#define PIPE_GAP 400
+#define MAX_PIPE_Y_OFFSET 400
 
 #define FOREGROUND_X_SPEED -5
 
