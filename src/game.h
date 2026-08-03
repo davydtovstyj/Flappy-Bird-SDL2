@@ -26,6 +26,10 @@ typedef struct
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 
+	double deltaTime;
+	Uint64 curr_time;
+	Uint64 last_time;
+
 	Assets assets;
 	World world;
 	

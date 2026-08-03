@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <math.h>
 
 bool create_bird(Bird *bird, SDL_Texture *texture)
 {
@@ -27,16 +28,22 @@ bool create_bird(Bird *bird, SDL_Texture *texture)
 	return true;
 }
 
-void update_bird(Bird *bird)
+void update_bird(Bird *bird, double deltaTime)
 {
-	bird->y_vel += BIRD_GRAVITY_FORCE;
+	bird->y_vel += BIRD_GRAVITY_FORCE * deltaTime;
 
 	// Clip max velocity
 	if (bird->y_vel > BIRD_MAX_Y_VEL)
 		bird->y_vel = BIRD_MAX_Y_VEL;
 
-	bird->angle = (double)bird->y_vel;
-	bird->y += bird->y_vel;
+	bird->angle = bird->y_vel * BIRD_ANGLE_COEF;
+	
+  if (bird->angle < -25.0) 
+		bird->angle = -25.0;
+  if (bird->angle > 45.0)  
+		bird->angle = 45.0;
+	
+	bird->y += bird->y_vel * deltaTime;
 	bird->rect.y = (int)bird->y;
 }
 
@@ -64,21 +71,25 @@ bool create_ground(Ground *ground, SDL_Texture *texture)
 	ground->rect.h *= scale;
 
 	ground->rect.x = 0;
+	ground->x = 0;
 	ground->rect.y = WINDOW_HEIGHT - ground->rect.h;
 
 	return true;
 }
 
-void update_grounds(Ground *ground_l, Ground *ground_r)
+void update_grounds(Ground *ground_l, Ground *ground_r, double deltaTime)
 {
-	ground_l->rect.x += FOREGROUND_X_SPEED;
+	ground_l->x += FOREGROUND_X_SPEED * deltaTime;
 
-	if (abs(ground_l->rect.x) > ground_l->rect.w)
+	if (fabs(ground_l->rect.x) > ground_l->rect.w)
 	{
-		ground_l->rect.x = ground_l->rect.x + ground_l->rect.w;
+		ground_l->x += ground_l->rect.w;
 	}
 	
-	ground_r->rect.x = ground_l->rect.x + ground_l->rect.w;
+	ground_r->x = ground_l->x + ground_l->rect.w;
+
+	ground_l->rect.x = (int)ground_l->x;
+	ground_r->rect.x = (int)ground_r->x;
 }
 
 bool create_pipe(Pipe *pipe, SDL_Texture *texture, int start_x_pos)
@@ -99,23 +110,26 @@ bool create_pipe(Pipe *pipe, SDL_Texture *texture, int start_x_pos)
 	pipe->rect.h *= PIPE_SCALE;
 
 	pipe->rect.x = start_x_pos;
+	pipe->x = start_x_pos;
 	pipe->rect.y = WINDOW_HEIGHT / 2 + pipe->y_offset;
 
 	return true;
 }
 
-void update_pipe(Pipe *pipe, Pipe last_pipe)
+void update_pipe(Pipe *pipe, Pipe *last_pipe, double deltaTime)
 {
-	pipe->rect.x += FOREGROUND_X_SPEED;
+	pipe->x += FOREGROUND_X_SPEED * deltaTime;
 
-	if (pipe->rect.x + pipe->rect.w < 0)
+	if (pipe->x + pipe->rect.w < 0)
 	{
-		pipe->rect.x = last_pipe.rect.x + last_pipe.rect.w + DISTANCE_BETWEEN_PIPES;
+		pipe->x = last_pipe->x + last_pipe->rect.w + DISTANCE_BETWEEN_PIPES;
 		pipe->y_offset = rand() % MAX_PIPE_Y_OFFSET;
 		if (rand() % 2 == 0)
 			pipe->y_offset *= -1;
 		pipe->rect.y = WINDOW_HEIGHT / 2 + pipe->y_offset;
 	}
+
+	pipe->rect.x = (int)pipe->x;
 }
 
 Pipe get_last_pipe(Pipe pipes[])

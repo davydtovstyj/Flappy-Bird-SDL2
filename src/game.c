@@ -15,6 +15,11 @@ void game_loop(Game *game)
 	if (action.quit)
 		game->is_running = false;
 
+	game->last_time = game->curr_time;
+	game->curr_time = SDL_GetPerformanceCounter();
+
+	game->deltaTime = (double)((game->curr_time - game->last_time) / (double)SDL_GetPerformanceFrequency()); // Delta Time in seconds
+
 	render_clear(game->renderer);
 
 	switch (game->state)
@@ -32,20 +37,21 @@ void game_loop(Game *game)
 		default:
 			break;
 	}
+
+	printf("fps: %f\n", 1 / game->deltaTime);
 	
 	render_present(game->renderer);
-	
-	SDL_Delay(16); // TODO: use delta time in update calculations
 }
 
 void update(Game *game)
 {
-	update_grounds(&game->world.grounds[0], &game->world.grounds[1]);
-	update_bird(&game->world.bird);
+	update_grounds(&game->world.grounds[0], &game->world.grounds[1], game->deltaTime);
+	update_bird(&game->world.bird, game->deltaTime);
 
 	for (int i = 0; i < MAX_PIPES_COUNT; i++)
 	{
-		update_pipe(&game->world.pipes[i], get_last_pipe(game->world.pipes));
+		Pipe last_pipe = get_last_pipe(game->world.pipes);
+		update_pipe(&game->world.pipes[i], &last_pipe, game->deltaTime);
 	}
 
 	if (has_collision(game))
@@ -102,6 +108,9 @@ bool game_create(Game *game)
 	game->is_running = true;
 	game->window = NULL;
 	game->renderer = NULL;
+	game->deltaTime = 0;
+	game->curr_time = SDL_GetPerformanceCounter();;
+	game->last_time = game->curr_time;
 	
 	// Initialize all SDL2 systems
 	if (!init_sdl())
