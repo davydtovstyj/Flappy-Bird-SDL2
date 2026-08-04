@@ -35,13 +35,15 @@ void update_bird(Bird *bird, double deltaTime)
 	// Clip max velocity
 	if (bird->y_vel > BIRD_MAX_Y_VEL)
 		bird->y_vel = BIRD_MAX_Y_VEL;
-
-	bird->angle = bird->y_vel * BIRD_ANGLE_COEF;
 	
-  if (bird->angle < -25.0) 
-		bird->angle = -25.0;
-  if (bird->angle > 45.0)  
-		bird->angle = 45.0;
+  double target_angle = 0.0;
+
+  if (bird->y_vel < 0)
+		target_angle = -25.0;
+	else
+		target_angle = (bird->y_vel / BIRD_MAX_Y_VEL) * 90.0;
+
+	bird->angle += (target_angle - bird->angle) * BIRD_ROTATION_SPEED * deltaTime; // LERP
 	
 	bird->y += bird->y_vel * deltaTime;
 	bird->rect.y = (int)bird->y;
@@ -81,7 +83,7 @@ void update_grounds(Ground *ground_l, Ground *ground_r, double deltaTime)
 {
 	ground_l->x += FOREGROUND_X_SPEED * deltaTime;
 
-	if (fabs(ground_l->rect.x) > ground_l->rect.w)
+	if (fabs(ground_l->x) > ground_l->rect.w)
 	{
 		ground_l->x += ground_l->rect.w;
 	}

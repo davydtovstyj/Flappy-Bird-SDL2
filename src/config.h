@@ -15,9 +15,9 @@
 #define BIRD_X_MARGIN 100
 #define BIRD_GRAVITY_FORCE 2500.0f
 #define BIRD_START_Y_VEL 1.0f
-#define BIRD_MAX_Y_VEL 50000.0f 
+#define BIRD_MAX_Y_VEL 3000.0f 
 #define BIRD_JUMP_FORCE -1000.0f
-#define BIRD_ANGLE_COEF 0.05f
+#define BIRD_ROTATION_SPEED 15.0f
 
 #define MAX_PIPES_COUNT 3
 #define PIPE_SCALE 5
@@ -26,5 +26,6 @@
 #define MAX_PIPE_Y_OFFSET 400
 
 #define FOREGROUND_X_SPEED -300
+
 
 #endif
