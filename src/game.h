@@ -40,7 +40,7 @@ typedef struct
 bool game_create(Game *game);
 void game_destroy(Game *game);
 void game_loop(Game *game);
-void update(Game *game);
+void update_game(Game *game);
 bool has_collision(Game *game);
 void render_game(Game *game);
 

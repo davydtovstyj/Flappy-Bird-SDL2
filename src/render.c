@@ -94,3 +94,20 @@ void destroy_renderer(SDL_Renderer *renderer)
 {
 	SDL_DestroyRenderer(renderer);
 }
+
+void update_fps_counter(double deltaTime)
+{
+	static double timer = 0.0;
+	static int frames = 0;
+
+	timer += deltaTime;
+	frames++;
+
+	if (timer >= 1.0)
+	{
+		printf("fps: %d\n", frames);
+
+		timer -= 1.0;
+		frames = 0;
+	}
+}

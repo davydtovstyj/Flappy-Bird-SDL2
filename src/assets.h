@@ -3,11 +3,12 @@
 
 #include <SDL2/SDL.h>
 #include <stdbool.h>
+#include "config.h"
 
 typedef struct {
 	SDL_Texture *background;
 	SDL_Texture *ground;
-	SDL_Texture *bird;
+	SDL_Texture *bird[BIRD_ANIM_FRAMES_COUNT];
 	SDL_Texture *pipe;
 } Assets;
 

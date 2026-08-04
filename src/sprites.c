@@ -11,6 +11,9 @@ bool create_bird(Bird *bird, SDL_Texture *texture)
 	bird->texture = texture;
 	bird->y_vel = BIRD_START_Y_VEL;
 	bird->angle = 0;
+	bird->curr_frame = 0;
+	bird->anim_direction = 1;
+	bird->anim_timer = 0.0;
 
 	if (SDL_QueryTexture(texture, NULL, NULL, &bird->rect.w, &bird->rect.h) != 0)
 	{
@@ -49,8 +52,29 @@ void update_bird(Bird *bird, double deltaTime)
 	bird->rect.y = (int)bird->y;
 }
 
+void update_bird_anim(Bird *bird, SDL_Texture *textures[], double deltaTime)
+{
+	bird->anim_timer += deltaTime;
+
+	if (bird->anim_timer >= BIRD_ANIM_FRAME_TIME)
+	{
+		if (bird->curr_frame <= 0)
+			bird->anim_direction = 1;
+		else if (bird->curr_frame >= BIRD_ANIM_FRAMES_COUNT - 1)
+			bird->anim_direction = -1;
+
+		bird->curr_frame += bird->anim_direction;
+		bird->anim_timer -= BIRD_ANIM_FRAME_TIME;
+	}
+	
+	bird->texture = textures[bird->curr_frame];
+}
+
 void bird_jump(Bird *bird)
 {
+	bird->curr_frame = 0;
+	bird->anim_timer = 0;
+	
 	if (bird->rect.y > 0)
 	{
 		bird->y_vel = BIRD_JUMP_FORCE;

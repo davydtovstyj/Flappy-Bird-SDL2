@@ -14,5 +14,6 @@ SDL_Window *create_window();
 void destroy_window(SDL_Window *window);
 SDL_Renderer *create_renderer(SDL_Window *window);
 void destroy_renderer(SDL_Renderer *renderer);
+void update_fps_counter(double deltaTime);
 
 #endif

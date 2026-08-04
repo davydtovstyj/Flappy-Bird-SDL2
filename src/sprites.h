@@ -12,6 +12,10 @@ typedef struct
 	float y;
 	float y_vel;
 	double angle;
+	
+	double anim_timer;
+	int curr_frame;
+	int anim_direction;
 } Bird;
 
 typedef struct
@@ -33,6 +37,7 @@ typedef struct
 
 bool create_bird(Bird *bird, SDL_Texture *texture);
 void update_bird(Bird *bird, double deltaTime);
+void update_bird_anim(Bird *bird, SDL_Texture *textures[], double deltaTime);
 void bird_jump(Bird *bird);
 bool create_ground(Ground *ground, SDL_Texture *texture);
 void update_grounds(Ground *ground_l, Ground *ground_r, double deltaTime);

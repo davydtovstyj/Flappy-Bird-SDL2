@@ -27,8 +27,10 @@ void game_loop(Game *game)
 		case PLAYING:
 			if (action.jump)
 				bird_jump(&game->world.bird);
-			update(game);
+
+			update_game(game);
 			render_game(game);
+
 			break;
 			
 		case GAME_OVER:
@@ -38,15 +40,16 @@ void game_loop(Game *game)
 			break;
 	}
 
-	printf("fps: %f\n", 1 / game->deltaTime);
+	update_fps_counter(game->deltaTime);
 	
 	render_present(game->renderer);
 }
 
-void update(Game *game)
+void update_game(Game *game)
 {
 	update_grounds(&game->world.grounds[0], &game->world.grounds[1], game->deltaTime);
 	update_bird(&game->world.bird, game->deltaTime);
+	update_bird_anim(&game->world.bird, game->assets.bird, game->deltaTime);
 
 	for (int i = 0; i < MAX_PIPES_COUNT; i++)
 	{
@@ -139,7 +142,7 @@ bool game_create(Game *game)
 		return false;
 	}
 
-	create_bird(&game->world.bird, game->assets.bird);
+	create_bird(&game->world.bird, game->assets.bird[0]);
 	
 	create_ground(&game->world.grounds[0], game->assets.ground);
 	create_ground(&game->world.grounds[1], game->assets.ground);
