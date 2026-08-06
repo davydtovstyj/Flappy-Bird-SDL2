@@ -36,12 +36,15 @@ typedef struct
 } Pipe;
 
 bool create_bird(Bird *bird, SDL_Texture *texture);
+void reset_bird(Bird *bird);
 void update_bird(Bird *bird, double deltaTime);
 void update_bird_anim(Bird *bird, SDL_Texture *textures[], double deltaTime);
 void bird_jump(Bird *bird);
 bool create_ground(Ground *ground, SDL_Texture *texture);
+void reset_ground(Ground *ground);
 void update_grounds(Ground *ground_l, Ground *ground_r, double deltaTime);
 bool create_pipe(Pipe *pipe, SDL_Texture *texture, int start_x_pos);
+void reset_pipe(Pipe *pipe, int start_x_pos);
 void update_pipe(Pipe *pipe, Pipe *last_pipe, double deltaTime);
 Pipe get_last_pipe(Pipe pipes[]);
 

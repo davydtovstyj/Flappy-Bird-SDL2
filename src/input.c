@@ -6,6 +6,7 @@ void update_input(Action *action)
 {
 	action->jump = false;
 	action->quit = false;
+	action->restart = false;
 	
 	SDL_Event event;
 
@@ -26,6 +27,10 @@ void update_input(Action *action)
 
 					case SDL_SCANCODE_SPACE:
 						action->jump = true;
+						break;
+
+					case SDL_SCANCODE_R:
+						action->restart = true;
 						break;
 
 					default:

@@ -1,6 +1,5 @@
 #include "game.h"
 #include "render.h"
-#include "input.h"
 #include "assets.h"
 #include "sprites.h"
 #include "config.h"
@@ -9,10 +8,9 @@
 
 void game_loop(Game *game)
 {
-	Action action;
-	update_input(&action);
+	update_input(&game->action);
 	
-	if (action.quit)
+	if (game->action.quit)
 		game->is_running = false;
 
 	game->last_time = game->curr_time;
@@ -25,7 +23,10 @@ void game_loop(Game *game)
 	switch (game->state)
 	{
 		case PLAYING:
-			if (action.jump)
+			if (game->action.restart)
+				game_restart(game);
+		
+			if (game->action.jump)
 				bird_jump(&game->world.bird);
 
 			update_game(game);
@@ -34,6 +35,12 @@ void game_loop(Game *game)
 			break;
 			
 		case GAME_OVER:
+			if (game->action.restart)
+			{
+				game->state = PLAYING;
+				game_restart(game);
+			}
+			
 			break;
 		
 		default:
@@ -60,6 +67,20 @@ void update_game(Game *game)
 	if (has_collision(game))
 	{
 		game->state = GAME_OVER;
+	}
+}
+
+void game_restart(Game *game)
+{
+	reset_bird(&game->world.bird);
+	reset_ground(&game->world.grounds[0]);
+	reset_ground(&game->world.grounds[1]);
+
+	reset_pipe(&game->world.pipes[0], WINDOW_WIDTH + DISTANCE_BETWEEN_PIPES);
+
+	for (int i = 1; i < MAX_PIPES_COUNT; i++)
+	{
+		reset_pipe(&game->world.pipes[i], game->world.pipes[i-1].x + game->world.pipes[i-1].rect.w + DISTANCE_BETWEEN_PIPES);
 	}
 }
 
@@ -109,6 +130,8 @@ bool game_create(Game *game)
 	// Initialize game values
 	game->state = PLAYING;
 	game->is_running = true;
+	game->action.quit = false;
+	game->action.jump = false;
 	game->window = NULL;
 	game->renderer = NULL;
 	game->deltaTime = 0;

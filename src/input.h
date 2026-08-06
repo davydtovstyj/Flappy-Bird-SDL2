@@ -7,6 +7,7 @@ typedef struct
 {
 	bool jump;
 	bool quit;
+	bool restart;
 } Action;
 
 void update_input(Action *action);

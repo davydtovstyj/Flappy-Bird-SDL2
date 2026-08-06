@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 #include "assets.h"
+#include "input.h"
 #include "sprites.h"
 #include "config.h"
 
@@ -30,6 +31,7 @@ typedef struct
 	Uint64 curr_time;
 	Uint64 last_time;
 
+	Action action;
 	Assets assets;
 	World world;
 	
@@ -40,6 +42,7 @@ typedef struct
 bool game_create(Game *game);
 void game_destroy(Game *game);
 void game_loop(Game *game);
+void game_restart(Game *game);
 void update_game(Game *game);
 bool has_collision(Game *game);
 void render_game(Game *game);
