@@ -2,6 +2,7 @@
 #include "render.h"
 #include "assets.h"
 #include "sprites.h"
+#include "audio.h"
 #include "config.h"
 #include <stdlib.h>
 #include <time.h>
@@ -27,7 +28,10 @@ void game_loop(Game *game)
 				game_restart(game);
 		
 			if (game->action.jump)
+			{
 				bird_jump(&game->world.bird);
+				play_sound(game->assets.sounds.bird_jump);
+			}
 
 			update_game(game);
 			render_game(game);
@@ -56,7 +60,7 @@ void update_game(Game *game)
 {
 	update_grounds(&game->world.grounds[0], &game->world.grounds[1], game->deltaTime);
 	update_bird(&game->world.bird, game->deltaTime);
-	update_bird_anim(&game->world.bird, game->assets.bird, game->deltaTime);
+	update_bird_anim(&game->world.bird, game->assets.textures.bird, game->deltaTime);
 
 	for (int i = 0; i < MAX_PIPES_COUNT; i++)
 	{
@@ -66,6 +70,7 @@ void update_game(Game *game)
 
 	if (has_collision(game))
 	{
+		play_sound(game->assets.sounds.bird_hit);
 		game->state = GAME_OVER;
 	}
 }
@@ -86,7 +91,7 @@ void game_restart(Game *game)
 
 void render_game(Game *game)
 {
-	render_background(game->renderer, game->assets.background);
+	render_background(game->renderer, game->assets.textures.background);
 
 	render_sprite(game->renderer, game->world.bird.texture, &game->world.bird.rect, game->world.bird.angle, SDL_FLIP_NONE);
 
@@ -158,6 +163,12 @@ bool game_create(Game *game)
 		game_destroy(game);
 		return false;
 	}
+
+	if (!init_audio())
+	{
+		game_destroy(game);
+		return false;
+	}
 	
 	if (!load_assets(game->renderer, &game->assets))
 	{
@@ -165,17 +176,17 @@ bool game_create(Game *game)
 		return false;
 	}
 
-	create_bird(&game->world.bird, game->assets.bird[0]);
+	create_bird(&game->world.bird, game->assets.textures.bird[0]);
 	
-	create_ground(&game->world.grounds[0], game->assets.ground);
-	create_ground(&game->world.grounds[1], game->assets.ground);
+	create_ground(&game->world.grounds[0], game->assets.textures.ground);
+	create_ground(&game->world.grounds[1], game->assets.textures.ground);
 
 	srand((int)time(NULL));
 
-	create_pipe(&game->world.pipes[0], game->assets.pipe, WINDOW_WIDTH + DISTANCE_BETWEEN_PIPES);
+	create_pipe(&game->world.pipes[0], game->assets.textures.pipe, WINDOW_WIDTH + DISTANCE_BETWEEN_PIPES);
 	for (int i = 1; i < MAX_PIPES_COUNT; i++)
 	{
-		create_pipe(&game->world.pipes[i], game->assets.pipe, game->world.pipes[i-1].rect.x + game->world.pipes[i-1].rect.w + DISTANCE_BETWEEN_PIPES);
+		create_pipe(&game->world.pipes[i], game->assets.textures.pipe, game->world.pipes[i-1].rect.x + game->world.pipes[i-1].rect.w + DISTANCE_BETWEEN_PIPES);
 	}
 	
 	return true;
@@ -183,6 +194,7 @@ bool game_create(Game *game)
 
 void game_destroy(Game *game)
 {
+	deinit_audio();
 	destroy_assets(&game->assets);
 	destroy_renderer(game->renderer);
 	destroy_window(game->window);

@@ -3,45 +3,64 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "assets.h"
+#include "audio.h"
 #include "config.h"
 
 bool load_assets(SDL_Renderer *renderer, Assets *assets)
 {
-	assets->background = NULL;
-	assets->ground = NULL;
-	assets->bird[0] = NULL;
-	assets->bird[1] = NULL;
-	assets->bird[2] = NULL;
-	assets->pipe = NULL;
-	
-	assets->background = load_texture(renderer, "assets/backgrounds/background-day.png");
-	if (assets->background == NULL)
+	assets->textures.background = NULL;
+	assets->textures.ground = NULL;
+	assets->textures.bird[0] = NULL;
+	assets->textures.bird[1] = NULL;
+	assets->textures.bird[2] = NULL;
+	assets->textures.pipe = NULL;
+
+	assets->sounds.bird_jump = NULL;
+	assets->sounds.bird_hit = NULL;
+	assets->sounds.plus_score = NULL;
+
+	// Textures
+	assets->textures.background = load_texture(renderer, "assets/backgrounds/background-day.png");
+	if (assets->textures.background == NULL)
 		return false;
 
-	assets->ground = load_texture(renderer, "assets/sprites/base.png");
-	if (assets->ground == NULL)
+	assets->textures.ground = load_texture(renderer, "assets/sprites/base.png");
+	if (assets->textures.ground == NULL)
 		return false;
 
-	assets->bird[0] = load_texture(renderer, "assets/sprites/bird0.png");
-	if (assets->bird[0] == NULL)
+	assets->textures.bird[0] = load_texture(renderer, "assets/sprites/bird0.png");
+	if (assets->textures.bird[0] == NULL)
 		return false;
 
-	assets->bird[1] = load_texture(renderer, "assets/sprites/bird1.png");
-	if (assets->bird[1] == NULL)
+	assets->textures.bird[1] = load_texture(renderer, "assets/sprites/bird1.png");
+	if (assets->textures.bird[1] == NULL)
 		return false;
 
-	assets->bird[2] = load_texture(renderer, "assets/sprites/bird2.png");
-	if (assets->bird[2] == NULL)
+	assets->textures.bird[2] = load_texture(renderer, "assets/sprites/bird2.png");
+	if (assets->textures.bird[2] == NULL)
 		return false;
 
-	assets->pipe = load_texture(renderer, "assets/sprites/pipe.png");
-	if (assets->pipe == NULL)
+	assets->textures.pipe = load_texture(renderer, "assets/sprites/pipe.png");
+	if (assets->textures.pipe == NULL)
+		return false;
+
+	// Sounds
+	assets->sounds.bird_jump = load_sound_wav("assets/sounds/wing.wav");
+	if (assets->sounds.bird_jump == NULL)
+		return false;
+
+	assets->sounds.bird_hit = load_sound_wav("assets/sounds/hit.wav");
+	if (assets->sounds.bird_hit == NULL)
+		return false;
+
+	assets->sounds.plus_score = load_sound_wav("assets/sounds/point.wav");
+	if (assets->sounds.plus_score == NULL)
 		return false;
 
 	return true;
 }
 
-SDL_Texture *load_texture(SDL_Renderer *renderer, char *path)
+SDL_Texture *load_texture(SDL_Renderer *renderer, const char *path)
 {
 	SDL_Texture *texture = IMG_LoadTexture(renderer, path);
 	if (texture == NULL)
@@ -55,10 +74,14 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, char *path)
 
 void destroy_assets(Assets *assets)
 {
-	SDL_DestroyTexture(assets->background);
-	SDL_DestroyTexture(assets->ground);
-	SDL_DestroyTexture(assets->bird[0]);
-	SDL_DestroyTexture(assets->bird[1]);
-	SDL_DestroyTexture(assets->bird[2]);
-	SDL_DestroyTexture(assets->pipe);
+	destroy_sound_wav(assets->sounds.bird_jump);
+	destroy_sound_wav(assets->sounds.bird_hit);
+	destroy_sound_wav(assets->sounds.plus_score);
+	
+	SDL_DestroyTexture(assets->textures.background);
+	SDL_DestroyTexture(assets->textures.ground);
+	SDL_DestroyTexture(assets->textures.bird[0]);
+	SDL_DestroyTexture(assets->textures.bird[1]);
+	SDL_DestroyTexture(assets->textures.bird[2]);
+	SDL_DestroyTexture(assets->textures.pipe);
 }
