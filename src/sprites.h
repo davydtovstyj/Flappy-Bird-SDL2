@@ -8,6 +8,7 @@ typedef struct
 {
 	SDL_Texture *texture;
 	SDL_Rect rect;
+	SDL_Rect hitbox;
 
 	float y;
 	float y_vel;
@@ -38,6 +39,7 @@ typedef struct
 bool create_bird(Bird *bird, SDL_Texture *texture);
 void reset_bird(Bird *bird);
 void update_bird(Bird *bird, double deltaTime);
+void update_bird_hitbox(Bird *bird);
 void update_bird_anim(Bird *bird, SDL_Texture *textures[], double deltaTime);
 void bird_jump(Bird *bird);
 bool create_ground(Ground *ground, SDL_Texture *texture);

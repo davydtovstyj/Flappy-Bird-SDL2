@@ -16,6 +16,5 @@ int main(void)
 	
 	game_destroy(&game);
 	
-	printf("Exited successfully!\n");
 	return EXIT_SUCCESS;
 }

@@ -51,7 +51,7 @@ void game_loop(Game *game)
 			break;
 	}
 
-	update_fps_counter(game->deltaTime);
+	update_fps_counter(game->deltaTime, &game->fps);
 	
 	render_present(game->renderer);
 }
@@ -60,6 +60,7 @@ void update_game(Game *game)
 {
 	update_grounds(&game->world.grounds[0], &game->world.grounds[1], game->deltaTime);
 	update_bird(&game->world.bird, game->deltaTime);
+	update_bird_hitbox(&game->world.bird);
 	update_bird_anim(&game->world.bird, game->assets.textures.bird, game->deltaTime);
 
 	for (int i = 0; i < MAX_PIPES_COUNT; i++)
@@ -107,12 +108,22 @@ void render_game(Game *game)
 
 	render_sprite(game->renderer, game->world.grounds[0].texture, &game->world.grounds[0].rect, 0, SDL_FLIP_NONE);
 	render_sprite(game->renderer, game->world.grounds[1].texture, &game->world.grounds[1].rect, 0, SDL_FLIP_NONE);
+
+	// Print FPS 
+	char fps_text[32];
+	snprintf(fps_text, sizeof(fps_text), "FPS: %d", game->fps);
+
+	SDL_Color gray = {125, 125, 125, 255};
+	render_text(game->renderer, game->assets.fonts.main_font, fps_text, gray, 20, WINDOW_HEIGHT - 20);
+
+	// Debug
+	//debug_draw_hitbox(game->renderer, &game->world.bird.hitbox);
 }
 
 bool has_collision(Game *game)
 {
 	// Check for ground collision
-	if((game->world.bird.rect.y + game->world.bird.rect.h) >= game->world.grounds[0].rect.y)
+	if((game->world.bird.hitbox.y + game->world.bird.hitbox.h) >= game->world.grounds[0].rect.y)
 		return true;
 
 	for (int i = 0; i < MAX_PIPES_COUNT; i++)
@@ -120,10 +131,10 @@ bool has_collision(Game *game)
 		SDL_Rect upper_pipe = game->world.pipes[i].rect;
 		upper_pipe.y -= game->world.pipes[i].rect.h + PIPE_GAP;
 
-		if (SDL_HasIntersection(&game->world.bird.rect, &game->world.pipes[i].rect))
+		if (SDL_HasIntersection(&game->world.bird.hitbox, &game->world.pipes[i].rect))
 				return true;
 
-		if (SDL_HasIntersection(&game->world.bird.rect, &upper_pipe))
+		if (SDL_HasIntersection(&game->world.bird.hitbox, &upper_pipe))
 				return true;
 	}
 
@@ -142,6 +153,7 @@ bool game_create(Game *game)
 	game->deltaTime = 0;
 	game->curr_time = SDL_GetPerformanceCounter();;
 	game->last_time = game->curr_time;
+	game->fps = 0;
 	
 	// Initialize all SDL2 systems
 	if (!init_sdl())

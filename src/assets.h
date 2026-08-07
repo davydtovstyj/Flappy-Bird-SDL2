@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
 #include "config.h"
 
@@ -20,7 +21,7 @@ typedef struct {
 } Sounds;
 
 typedef struct {
-
+	TTF_Font *main_font;
 } Fonts;
 
 typedef struct {
@@ -32,5 +33,6 @@ typedef struct {
 bool load_assets(SDL_Renderer *renderer, Assets *assets);
 void destroy_assets(Assets *assets);
 SDL_Texture *load_texture(SDL_Renderer *renderer, const char *path);
+TTF_Font *load_font(const char *path, int ptsize);
 
 #endif

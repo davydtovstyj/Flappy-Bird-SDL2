@@ -30,6 +30,7 @@ typedef struct
 	double deltaTime;
 	Uint64 curr_time;
 	Uint64 last_time;
+	int fps;
 
 	Action action;
 	Assets assets;

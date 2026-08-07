@@ -24,6 +24,23 @@ void render_background(SDL_Renderer *renderer, SDL_Texture *background)
 	SDL_RenderCopy(renderer, background, NULL, NULL);
 }
 
+void render_text(SDL_Renderer *renderer, TTF_Font *font, const char *text, SDL_Color color, int x, int y)
+{
+	SDL_Surface *surface = TTF_RenderText_Blended(font, text, color);
+	if (!surface) 
+		return;
+
+	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+	if (texture != NULL)
+	{
+		SDL_Rect rect = { x, y - surface->h, surface->w, surface->h };
+		SDL_RenderCopy(renderer, texture, NULL, &rect);
+		SDL_DestroyTexture(texture);
+	}
+
+	SDL_FreeSurface(surface);
+}
+
 bool init_sdl()
 {
 	if (SDL_Init(SDL_INIT_FLAGS) != 0)
@@ -37,12 +54,19 @@ bool init_sdl()
 		fprintf(stderr, "Error initializing SDL_image: %s\n", IMG_GetError());
 		return false;
 	}
+
+	if (TTF_Init() != 0)
+	{
+		fprintf(stderr, "Error initializing SDL_ttf: %s\n", TTF_GetError());
+		return false;
+	}
 	
 	return true;
 }
 
 void deinit_sdl()
 {
+	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
 }
@@ -95,7 +119,7 @@ void destroy_renderer(SDL_Renderer *renderer)
 	SDL_DestroyRenderer(renderer);
 }
 
-void update_fps_counter(double deltaTime)
+bool update_fps_counter(double deltaTime, int *out_fps)
 {
 	static double timer = 0.0;
 	static int frames = 0;
@@ -105,9 +129,20 @@ void update_fps_counter(double deltaTime)
 
 	if (timer >= 1.0)
 	{
-		printf("fps: %d\n", frames);
+		*out_fps = frames;
 
 		timer -= 1.0;
 		frames = 0;
+		
+		return true;
 	}
+
+	return false;
+}
+
+void debug_draw_hitbox(SDL_Renderer *renderer, SDL_Rect *hitbox)
+{
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	SDL_RenderDrawRect(renderer, hitbox);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 }

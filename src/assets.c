@@ -57,6 +57,11 @@ bool load_assets(SDL_Renderer *renderer, Assets *assets)
 	if (assets->sounds.plus_score == NULL)
 		return false;
 
+	// Fonts
+	assets->fonts.main_font = load_font("assets/fonts/flappy-font.ttf", MAIN_TEXT_SIZE);
+	if (assets->fonts.main_font == NULL)
+		return false;
+
 	return true;
 }
 
@@ -72,8 +77,22 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, const char *path)
 	return texture;
 }
 
+TTF_Font *load_font(const char *path, int ptsize)
+{
+	TTF_Font *font = TTF_OpenFont(path, ptsize);
+	if (font == NULL)
+	{
+		fprintf(stderr, "Error loading font \"%s\": %s\n", path, TTF_GetError());
+		return NULL;
+	}
+
+	return font;
+}
+
 void destroy_assets(Assets *assets)
 {
+	TTF_CloseFont(assets->fonts.main_font);
+
 	destroy_sound_wav(assets->sounds.bird_jump);
 	destroy_sound_wav(assets->sounds.bird_hit);
 	destroy_sound_wav(assets->sounds.plus_score);

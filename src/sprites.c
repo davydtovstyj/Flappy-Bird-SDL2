@@ -19,7 +19,11 @@ bool create_bird(Bird *bird, SDL_Texture *texture)
 	bird->rect.w *= BIRD_SCALE;
 	bird->rect.h *= BIRD_SCALE;
 
+	bird->hitbox.w = bird->rect.w - BIRD_HITBOX_INFLATE_W;
+	bird->hitbox.h = bird->rect.h - BIRD_HITBOX_INFLATE_H;
+
 	bird->rect.x = BIRD_X_MARGIN;
+	bird->hitbox.x = bird->rect.x + BIRD_HITBOX_INFLATE_W / 2;
 
 	reset_bird(bird);
 
@@ -57,6 +61,28 @@ void update_bird(Bird *bird, double deltaTime)
 	
 	bird->y += bird->y_vel * deltaTime;
 	bird->rect.y = (int)bird->y;
+}
+
+void update_bird_hitbox(Bird *bird)
+{
+	int base_w = bird->rect.w - BIRD_HITBOX_INFLATE_W;
+	int base_h = bird->rect.h - BIRD_HITBOX_INFLATE_H;
+
+	// Translate angle from degrees to radians
+	double rad_angle = bird->angle * (M_PI / 180);
+	double abs_cos = fabs(cos(rad_angle));
+	double abs_sin = fabs(sin(rad_angle));
+
+	int new_w = (int)(base_w * abs_cos + base_h * abs_sin);
+  int new_h = (int)(base_w * abs_sin + base_h * abs_cos);
+
+  int center_x = bird->rect.x + bird->rect.w / 2;
+	int center_y = bird->rect.y + bird->rect.h / 2;
+
+	bird->hitbox.w = new_w;
+	bird->hitbox.h = new_h;
+	bird->hitbox.x = center_x - new_w / 2;
+	bird->hitbox.y = center_y - new_h / 2;
 }
 
 void update_bird_anim(Bird *bird, SDL_Texture *textures[], double deltaTime)
