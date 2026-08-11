@@ -34,6 +34,8 @@ typedef struct
 
 	float x;
 	int y_offset;
+
+	bool passed;
 } Pipe;
 
 bool create_bird(Bird *bird, SDL_Texture *texture);
@@ -48,6 +50,6 @@ void update_grounds(Ground *ground_l, Ground *ground_r, double deltaTime);
 bool create_pipe(Pipe *pipe, SDL_Texture *texture, int start_x_pos);
 void reset_pipe(Pipe *pipe, int start_x_pos);
 void update_pipe(Pipe *pipe, Pipe *last_pipe, double deltaTime);
-Pipe get_last_pipe(Pipe pipes[]);
+Pipe *get_last_pipe(Pipe pipes[]);
 
 #endif

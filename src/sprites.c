@@ -53,9 +53,9 @@ void update_bird(Bird *bird, double deltaTime)
   double target_angle = 0.0;
 
   if (bird->y_vel < 0)
-		target_angle = -25.0;
+		target_angle = BIRD_MIN_ANGLE;
 	else
-		target_angle = (bird->y_vel / BIRD_MAX_Y_VEL) * 90.0;
+		target_angle = (bird->y_vel / BIRD_MAX_Y_VEL) * BIRD_MAX_ANGLE;
 
 	bird->angle += (target_angle - bird->angle) * BIRD_ROTATION_SPEED * deltaTime; // LERP
 	
@@ -184,6 +184,7 @@ void reset_pipe(Pipe *pipe, int start_x_pos)
 	pipe->rect.x = start_x_pos;
 	pipe->x = start_x_pos;
 	pipe->rect.y = WINDOW_HEIGHT / 2 + pipe->y_offset;
+	pipe->passed = false;
 }
 
 void update_pipe(Pipe *pipe, Pipe *last_pipe, double deltaTime)
@@ -192,30 +193,26 @@ void update_pipe(Pipe *pipe, Pipe *last_pipe, double deltaTime)
 
 	if (pipe->x + pipe->rect.w < 0)
 	{
-		pipe->x = last_pipe->x + last_pipe->rect.w + DISTANCE_BETWEEN_PIPES;
-		pipe->y_offset = rand() % MAX_PIPE_Y_OFFSET;
-		if (rand() % 2 == 0)
-			pipe->y_offset *= -1;
-		pipe->rect.y = WINDOW_HEIGHT / 2 + pipe->y_offset;
+		reset_pipe(pipe, last_pipe->rect.x + last_pipe->rect.w + DISTANCE_BETWEEN_PIPES);
 	}
 
 	pipe->rect.x = (int)pipe->x;
 }
 
-Pipe get_last_pipe(Pipe pipes[])
+Pipe *get_last_pipe(Pipe pipes[])
 {
 	int max_x = pipes[0].rect.x;
-	Pipe last_pipe = pipes[0];
+	int max_ind = 0;
 
 	for (int i = 0; i < MAX_PIPES_COUNT; i++)
 	{
 		if (pipes[i].rect.x > max_x)
 		{
 			max_x = pipes[i].rect.x;
-			last_pipe = pipes[i];
+			max_ind = i;
 		}
 	}
 
-	return last_pipe;
+	return &pipes[max_ind];
 }
 

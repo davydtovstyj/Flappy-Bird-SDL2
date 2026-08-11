@@ -16,7 +16,8 @@ void render_clear(SDL_Renderer *renderer)
 
 void render_sprite(SDL_Renderer *renderer, SDL_Texture *sprite, SDL_Rect *sprite_rect, const double angle, SDL_RendererFlip flip)
 {
-	SDL_RenderCopyEx(renderer, sprite, NULL, sprite_rect, angle, NULL, flip);
+	if (sprite != NULL)
+		SDL_RenderCopyEx(renderer, sprite, NULL, sprite_rect, angle, NULL, flip);
 }
 
 void render_background(SDL_Renderer *renderer, SDL_Texture *background)
@@ -24,18 +25,23 @@ void render_background(SDL_Renderer *renderer, SDL_Texture *background)
 	SDL_RenderCopy(renderer, background, NULL, NULL);
 }
 
-void render_text(SDL_Renderer *renderer, TTF_Font *font, const char *text, SDL_Color color, int x, int y)
+void update_text_texture(SDL_Renderer *renderer, TTF_Font *font, const char *text, SDL_Color color, int x, int y, SDL_Texture **out_texture, SDL_Rect *out_rect)
 {
+	if (*out_texture != NULL) {
+			SDL_DestroyTexture(*out_texture);
+	}
+
 	SDL_Surface *surface = TTF_RenderText_Blended(font, text, color);
 	if (!surface) 
 		return;
 
-	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-	if (texture != NULL)
+	*out_texture = SDL_CreateTextureFromSurface(renderer, surface);
+	if (*out_texture != NULL)
 	{
-		SDL_Rect rect = { x, y - surface->h, surface->w, surface->h };
-		SDL_RenderCopy(renderer, texture, NULL, &rect);
-		SDL_DestroyTexture(texture);
+		out_rect->x = x;
+		out_rect->y = y - surface->h;
+		out_rect->w = surface->w;
+		out_rect->h = surface->h;
 	}
 
 	SDL_FreeSurface(surface);
@@ -77,8 +83,8 @@ SDL_Window *create_window()
 		WINDOW_TITLE, 
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		WINDOW_WIDTH/2,
-		WINDOW_HEIGHT/2,
+		WINDOW_WIDTH/3,  // TODO: calculate window scale
+		WINDOW_HEIGHT/3, // depending on screen size
 		WINDOW_FLAGS
 		);
 	if (window == NULL)

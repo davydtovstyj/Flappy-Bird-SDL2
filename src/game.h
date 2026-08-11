@@ -38,6 +38,8 @@ typedef struct
 	
 	State state;
 	bool is_running;
+
+	int score;
 } Game;
 
 bool game_create(Game *game);
@@ -45,6 +47,7 @@ void game_destroy(Game *game);
 void game_loop(Game *game);
 void game_restart(Game *game);
 void update_game(Game *game);
+void update_scoring(Game *game);
 bool has_collision(Game *game);
 void render_game(Game *game);
 

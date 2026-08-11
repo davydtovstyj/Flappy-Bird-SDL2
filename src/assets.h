@@ -24,10 +24,17 @@ typedef struct {
 	TTF_Font *main_font;
 } Fonts;
 
+typedef struct
+{
+	SDL_Texture *fps_texture;
+  SDL_Rect fps_rect;
+} TextCache;
+
 typedef struct {
 	Textures textures;
 	Sounds sounds;
 	Fonts fonts;
+	TextCache text_cache;
 } Assets;
 
 bool load_assets(SDL_Renderer *renderer, Assets *assets);

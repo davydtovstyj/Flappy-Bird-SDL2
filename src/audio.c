@@ -36,7 +36,7 @@ bool init_audio()
 		return false;
 	}
 
-	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, MIX_CHUCK_SIZE) != 0)
+	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, MIX_CHUNCK_SIZE) != 0)
 	{
 		fprintf(stderr, "Error opening audio device: %s\n", Mix_GetError());
 		return false;

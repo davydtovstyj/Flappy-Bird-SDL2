@@ -1,11 +1,13 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// TODO: make basic game config file
+
 #define SDL_INIT_FLAGS SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS
 #define IMG_INIT_FLAGS IMG_INIT_PNG
 #define MIX_INIT_FLAGS 0
 
-#define MIX_CHUCK_SIZE 1024 // Minimum Latency
+#define MIX_CHUNCK_SIZE 2048 
 
 #define MAIN_TEXT_SIZE 50
 
@@ -26,6 +28,8 @@
 #define BIRD_ANIM_FRAME_TIME 0.3
 #define BIRD_HITBOX_INFLATE_W 6 * BIRD_SCALE
 #define BIRD_HITBOX_INFLATE_H 8 * BIRD_SCALE
+#define BIRD_MIN_ANGLE -25.0
+#define BIRD_MAX_ANGLE 90.0
 
 #define MAX_PIPES_COUNT 3
 #define PIPE_SCALE 5
