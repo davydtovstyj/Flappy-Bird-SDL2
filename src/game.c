@@ -46,6 +46,9 @@ void game_loop(Game *game)
 				game->state = PLAYING;
 				game_restart(game);
 			}
+
+			render_game_over(game);
+			update_game_over(game);
 			
 			break;
 		
@@ -73,9 +76,9 @@ void update_game(Game *game)
 	update_bird_hitbox(&game->world.bird);
 	update_bird_anim(&game->world.bird, game->assets.textures.bird, game->deltaTime);
 
-	Pipe *last_pipe = get_last_pipe(game->world.pipes);
 	for (int i = 0; i < MAX_PIPES_COUNT; i++)
 	{
+		Pipe *last_pipe = get_last_pipe(game->world.pipes);
 		update_pipe(&game->world.pipes[i], last_pipe, game->deltaTime);
 	}
 
@@ -83,12 +86,21 @@ void update_game(Game *game)
 	{
 		play_sound(game->assets.sounds.bird_hit);
 		game->state = GAME_OVER;
+		bird_jump(&game->world.bird);
 	}
 
-	update_scoring(game);
+	if (update_scoring(game))
+	{
+		char score_text[32];
+		snprintf(score_text, sizeof(score_text), "%d", game->score);
+
+		SDL_Color white = {255, 255, 255, 255};
+		update_text_texture(game->renderer, game->assets.fonts.main_font, score_text, white, (WINDOW_WIDTH / 2) - (game->assets.text_cache.score_rect.w / 2) , 150, &game->assets.text_cache.score_texture, &game->assets.text_cache.score_rect);
+		game->assets.text_cache.score_rect.x = (WINDOW_WIDTH - game->assets.text_cache.score_rect.w) / 2;
+	}
 }
 
-void update_scoring(Game *game)
+bool update_scoring(Game *game)
 {
 	for (int i = 0; i < MAX_PIPES_COUNT; i++)
 	{
@@ -97,9 +109,12 @@ void update_scoring(Game *game)
 			game->score++;
 			game->world.pipes[i].passed = true;
 			play_sound(game->assets.sounds.plus_score);
-			printf("score: %d\n", game->score);
+			
+			return true;
 		}
 	}
+	
+	return false;
 }
 
 void game_restart(Game *game)
@@ -116,6 +131,9 @@ void game_restart(Game *game)
 	}
 
 	game->score = 0;
+	SDL_Color white = {255, 255, 255, 255};
+	update_text_texture(game->renderer, game->assets.fonts.main_font, "0", white, 0, SCORE_TEXT_Y_OFFSET, &game->assets.text_cache.score_texture, &game->assets.text_cache.score_rect);
+	game->assets.text_cache.score_rect.x = (WINDOW_WIDTH - game->assets.text_cache.score_rect.w) / 2;
 }
 
 void render_game(Game *game)
@@ -136,10 +154,52 @@ void render_game(Game *game)
 
 	render_sprite(game->renderer, game->world.grounds[0].texture, &game->world.grounds[0].rect, 0, SDL_FLIP_NONE);
 	render_sprite(game->renderer, game->world.grounds[1].texture, &game->world.grounds[1].rect, 0, SDL_FLIP_NONE);
+	
 	render_sprite(game->renderer, game->assets.text_cache.fps_texture, &game->assets.text_cache.fps_rect, 0, SDL_FLIP_NONE);
+	render_sprite(game->renderer, game->assets.text_cache.score_texture, &game->assets.text_cache.score_rect, 0, SDL_FLIP_NONE);
 
 	// Debug
-	//debug_draw_hitbox(game->renderer, &game->world.bird.hitbox);
+	if (DEBUG_ENABLED)
+	{
+		SDL_SetRenderDrawColor(game->renderer, 255, 0, 0, 255);
+		debug_draw_hitbox(game->renderer, &game->world.bird.hitbox);
+
+		SDL_SetRenderDrawColor(game->renderer, 0, 255, 0, 255);
+		for (int i = 0; i < MAX_PIPES_COUNT; i++)
+		{
+			debug_draw_hitbox(game->renderer, &game->world.pipes[i].rect);
+		}
+
+		SDL_SetRenderDrawColor(game->renderer, 0, 0, 0, 255);
+		debug_draw_hitbox(game->renderer, &game->world.grounds[0].rect);
+		debug_draw_hitbox(game->renderer, &game->world.grounds[1].rect);
+	}
+}
+
+void render_game_over(Game *game)
+{
+	render_background(game->renderer, game->assets.textures.background);
+
+	for (int i = 0; i < MAX_PIPES_COUNT; i++)
+	{
+		render_sprite(game->renderer, game->world.pipes[i].texture, &game->world.pipes[i].rect, 0, SDL_FLIP_NONE);
+		
+		SDL_Rect upper_pipe_rect = game->world.pipes[i].rect;
+		upper_pipe_rect.y -= upper_pipe_rect.h + PIPE_GAP;
+		
+		render_sprite(game->renderer, game->world.pipes[i].texture, &upper_pipe_rect, 0, SDL_FLIP_VERTICAL);
+	}
+
+	render_sprite(game->renderer, game->world.grounds[0].texture, &game->world.grounds[0].rect, 0, SDL_FLIP_NONE);
+	render_sprite(game->renderer, game->world.grounds[1].texture, &game->world.grounds[1].rect, 0, SDL_FLIP_NONE);
+
+	render_sprite(game->renderer, game->world.bird.texture, &game->world.bird.rect, game->world.bird.angle, SDL_FLIP_NONE);
+}
+
+void update_game_over(Game *game)
+{
+	if (game->world.bird.rect.y < WINDOW_HEIGHT + 50)
+		update_bird_hit_anim(&game->world.bird, game->deltaTime);
 }
 
 bool has_collision(Game *game)
@@ -223,6 +283,8 @@ bool game_create(Game *game)
 	{
 		create_pipe(&game->world.pipes[i], game->assets.textures.pipe, game->world.pipes[i-1].rect.x + game->world.pipes[i-1].rect.w + DISTANCE_BETWEEN_PIPES);
 	}
+
+	game_restart(game);
 	
 	return true;
 }

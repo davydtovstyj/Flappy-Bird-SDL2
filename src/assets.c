@@ -14,7 +14,9 @@ bool load_assets(SDL_Renderer *renderer, Assets *assets)
 	assets->textures.bird[1] = NULL;
 	assets->textures.bird[2] = NULL;
 	assets->textures.pipe = NULL;
+	
 	assets->text_cache.fps_texture = NULL;
+	assets->text_cache.score_texture = NULL;
 
 	assets->sounds.bird_jump = NULL;
 	assets->sounds.bird_hit = NULL;
@@ -99,6 +101,8 @@ void destroy_assets(Assets *assets)
 	destroy_sound_wav(assets->sounds.plus_score);
 
 	SDL_DestroyTexture(assets->text_cache.fps_texture);
+	SDL_DestroyTexture(assets->text_cache.score_texture);
+	
 	SDL_DestroyTexture(assets->textures.background);
 	SDL_DestroyTexture(assets->textures.ground);
 	SDL_DestroyTexture(assets->textures.bird[0]);

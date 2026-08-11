@@ -28,6 +28,8 @@ typedef struct
 {
 	SDL_Texture *fps_texture;
   SDL_Rect fps_rect;
+  SDL_Texture *score_texture;
+  SDL_Rect score_rect;
 } TextCache;
 
 typedef struct {

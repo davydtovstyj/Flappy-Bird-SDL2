@@ -47,8 +47,10 @@ void game_destroy(Game *game);
 void game_loop(Game *game);
 void game_restart(Game *game);
 void update_game(Game *game);
-void update_scoring(Game *game);
+bool update_scoring(Game *game);
 bool has_collision(Game *game);
 void render_game(Game *game);
+void render_game_over(Game *game);
+void update_game_over(Game *game);
 
 #endif

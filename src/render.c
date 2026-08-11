@@ -133,11 +133,11 @@ bool update_fps_counter(double deltaTime, int *out_fps)
 	timer += deltaTime;
 	frames++;
 
-	if (timer >= 1.0)
+	if (timer >= UPDATE_FPS_COUNTER_TIME)
 	{
 		*out_fps = frames;
 
-		timer -= 1.0;
+		timer -= UPDATE_FPS_COUNTER_TIME;
 		frames = 0;
 		
 		return true;
@@ -148,7 +148,5 @@ bool update_fps_counter(double deltaTime, int *out_fps)
 
 void debug_draw_hitbox(SDL_Renderer *renderer, SDL_Rect *hitbox)
 {
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 	SDL_RenderDrawRect(renderer, hitbox);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 }

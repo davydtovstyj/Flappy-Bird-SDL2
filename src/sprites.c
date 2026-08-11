@@ -25,8 +25,6 @@ bool create_bird(Bird *bird, SDL_Texture *texture)
 	bird->rect.x = BIRD_X_MARGIN;
 	bird->hitbox.x = bird->rect.x + BIRD_HITBOX_INFLATE_W / 2;
 
-	reset_bird(bird);
-
 	return true;
 }
 
@@ -103,6 +101,17 @@ void update_bird_anim(Bird *bird, SDL_Texture *textures[], double deltaTime)
 	bird->texture = textures[bird->curr_frame];
 }
 
+void update_bird_hit_anim(Bird *bird, double deltaTime)
+{
+	bird->y_vel += BIRD_GRAVITY_FORCE * deltaTime;
+	bird->y += bird->y_vel * deltaTime;
+	bird->rect.y = (int)bird->y;
+
+	double target_angle = BIRD_HITTET_MAX_ANGLE;
+
+	bird->angle += (target_angle - bird->angle) * BIRD_ROTATION_SPEED / 2 * deltaTime; // LERP
+}
+
 void bird_jump(Bird *bird)
 {
 	bird->curr_frame = 0;
@@ -130,8 +139,6 @@ bool create_ground(Ground *ground, SDL_Texture *texture)
 	ground->rect.h *= scale;
 	
 	ground->rect.y = WINDOW_HEIGHT - ground->rect.h;
-
-	reset_ground(ground);
 
 	return true;
 }
@@ -169,8 +176,6 @@ bool create_pipe(Pipe *pipe, SDL_Texture *texture, int start_x_pos)
 
 	pipe->rect.w *= PIPE_SCALE;
 	pipe->rect.h *= PIPE_SCALE;
-
-	reset_pipe(pipe, start_x_pos);
 
 	return true;
 }
