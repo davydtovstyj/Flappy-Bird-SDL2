@@ -1,8 +1,7 @@
 #include "input.h"
-#include <SDL2/SDL.h>
 #include <stdbool.h>
 
-void update_input(Action *action)
+void update_input(Action *action, SDL_Rect restart_button_rect)
 {
 	action->jump = false;
 	action->quit = false;
@@ -35,6 +34,17 @@ void update_input(Action *action)
 
 					default:
 						break;
+				}
+				break;
+
+			case SDL_MOUSEBUTTONDOWN:
+				if (event.button.button == SDL_BUTTON_LEFT)
+				{
+					if (event.button.x > restart_button_rect.x && event.button.x < restart_button_rect.x + restart_button_rect.w &&
+							event.button.y > restart_button_rect.y && event.button.y < restart_button_rect.y + restart_button_rect.h)
+					{
+						action->restart = true;
+					}
 				}
 				break;
 			

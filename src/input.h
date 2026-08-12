@@ -2,6 +2,7 @@
 #define INPUT_H
 
 #include <stdbool.h>
+#include <SDL2/SDL.h>
 
 typedef struct 
 {
@@ -10,6 +11,6 @@ typedef struct
 	bool restart;
 } Action;
 
-void update_input(Action *action);
+void update_input(Action *action, SDL_Rect restart_button_rect);
 
 #endif

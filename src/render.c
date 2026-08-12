@@ -47,6 +47,17 @@ void update_text_texture(SDL_Renderer *renderer, TTF_Font *font, const char *tex
 	SDL_FreeSurface(surface);
 }
 
+void render_overlay(SDL_Renderer *renderer, SDL_Color color, int alpha)
+{
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+	SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, alpha);
+
+	SDL_Rect rect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+
+	SDL_RenderFillRect(renderer, &rect);
+}
+
 bool init_sdl()
 {
 	if (SDL_Init(SDL_INIT_FLAGS) != 0)
