@@ -1,8 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// TODO: make basic game config file
-
 #define DEBUG_ENABLED false
 
 #define SDL_INIT_FLAGS SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS
@@ -12,6 +10,7 @@
 #define MIX_CHUNCK_SIZE 2048 
 
 #define MAIN_TEXT_SIZE 100
+#define TITLE_TEXT_SIZE 150
 
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 1920
@@ -38,7 +37,7 @@
 #define PIPE_SCALE 5
 #define DISTANCE_BETWEEN_PIPES 500
 #define PIPE_GAP 500
-#define MAX_PIPE_Y_OFFSET 400
+#define MAX_PIPE_Y_OFFSET 330
 
 #define FOREGROUND_X_SPEED -500
 

@@ -1,11 +1,12 @@
 #include "input.h"
 #include <stdbool.h>
 
-void update_input(Action *action, SDL_Rect restart_button_rect)
+void update_input(Action *action, SDL_Rect restart_button_rect, SDL_Rect start_button_rect)
 {
 	action->jump = false;
 	action->quit = false;
 	action->restart = false;
+	action->start = false;
 	
 	SDL_Event event;
 
@@ -32,6 +33,10 @@ void update_input(Action *action, SDL_Rect restart_button_rect)
 						action->restart = true;
 						break;
 
+					case SDL_SCANCODE_RETURN:
+						action->start = true;
+						break;
+
 					default:
 						break;
 				}
@@ -45,6 +50,14 @@ void update_input(Action *action, SDL_Rect restart_button_rect)
 					{
 						action->restart = true;
 					}
+
+					if (event.button.x > start_button_rect.x && event.button.x < start_button_rect.x + start_button_rect.w &&
+							event.button.y > start_button_rect.y && event.button.y < start_button_rect.y + start_button_rect.h)
+					{
+						action->start = true;
+					}
+
+					action->jump = true;
 				}
 				break;
 			

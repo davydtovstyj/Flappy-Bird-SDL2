@@ -9,7 +9,7 @@
 
 void game_loop(Game *game)
 {
-	update_input(&game->action, game->game_over_overlay.restart_text_rect);
+	update_input(&game->action, game->game_over_overlay.restart_text_rect, game->menu_overlay.start_text_rect);
 	
 	if (game->action.quit)
 		game->is_running = false;
@@ -19,7 +19,7 @@ void game_loop(Game *game)
 
 	game->deltaTime = (double)((game->curr_time - game->last_time) / (double)SDL_GetPerformanceFrequency()); // Delta Time in seconds
 	if (game->deltaTime > 0.05) 
-		game->deltaTime = 0.05; // Min 20fps
+		game->deltaTime = 0.05; // Min 20 fps
 
 	render_clear(game->renderer);
 
@@ -42,11 +42,24 @@ void game_loop(Game *game)
 			{
 				game->state = PLAYING;
 				game_restart(game);
+				break;
 			}
 
 			update_game_over(game);
 			render_game_over(game);
 			
+			break;
+
+		case MENU:
+			if (game->action.start)
+			{
+				game->state = PLAYING;
+				break;
+			}
+		
+			update_menu(game);
+			render_menu(game);
+
 			break;
 		
 		default:
@@ -84,7 +97,7 @@ void update_game(Game *game)
 		play_sound(game->assets.sounds.bird_hit);
 		game->state = GAME_OVER;
 		bird_jump(&game->world.bird);
-		create_game_over_overlay(game);
+		update_game_over_overlay(game);
 	}
 
 	if (update_scoring(game))
@@ -139,22 +152,22 @@ void render_game(Game *game)
 {
 	render_background(game->renderer, game->assets.textures.background);
 
-	render_sprite(game->renderer, game->world.bird.texture, &game->world.bird.rect, game->world.bird.angle, SDL_FLIP_NONE);
+	render_sprite_ex(game->renderer, game->world.bird.texture, &game->world.bird.rect, game->world.bird.angle, SDL_FLIP_NONE);
 
 	for (int i = 0; i < MAX_PIPES_COUNT; i++)
 	{
-		render_sprite(game->renderer, game->world.pipes[i].texture, &game->world.pipes[i].rect, 0, SDL_FLIP_NONE);
+		render_sprite(game->renderer, game->world.pipes[i].texture, &game->world.pipes[i].rect);
 		
 		SDL_Rect upper_pipe_rect = game->world.pipes[i].rect;
 		upper_pipe_rect.y -= upper_pipe_rect.h + PIPE_GAP;
 		
-		render_sprite(game->renderer, game->world.pipes[i].texture, &upper_pipe_rect, 0, SDL_FLIP_VERTICAL);
+		render_sprite_ex(game->renderer, game->world.pipes[i].texture, &upper_pipe_rect, 0, SDL_FLIP_VERTICAL);
 	}
 
-	render_sprite(game->renderer, game->world.grounds[0].texture, &game->world.grounds[0].rect, 0, SDL_FLIP_NONE);
-	render_sprite(game->renderer, game->world.grounds[1].texture, &game->world.grounds[1].rect, 0, SDL_FLIP_NONE);
+	render_sprite(game->renderer, game->world.grounds[0].texture, &game->world.grounds[0].rect);
+	render_sprite(game->renderer, game->world.grounds[1].texture, &game->world.grounds[1].rect);
 
-	render_sprite(game->renderer, game->assets.text_cache.score_texture, &game->assets.text_cache.score_rect, 0, SDL_FLIP_NONE);
+	render_sprite(game->renderer, game->assets.text_cache.score_texture, &game->assets.text_cache.score_rect);
 
 	// Debug
 	if (DEBUG_ENABLED)
@@ -172,7 +185,7 @@ void render_game(Game *game)
 		debug_draw_hitbox(game->renderer, &game->world.grounds[0].rect);
 		debug_draw_hitbox(game->renderer, &game->world.grounds[1].rect);
 
-		render_sprite(game->renderer, game->assets.text_cache.fps_texture, &game->assets.text_cache.fps_rect, 0, SDL_FLIP_NONE);
+		render_sprite(game->renderer, game->assets.text_cache.fps_texture, &game->assets.text_cache.fps_rect);
 	}
 }
 
@@ -182,23 +195,23 @@ void render_game_over(Game *game)
 
 	for (int i = 0; i < MAX_PIPES_COUNT; i++)
 	{
-		render_sprite(game->renderer, game->world.pipes[i].texture, &game->world.pipes[i].rect, 0, SDL_FLIP_NONE);
+		render_sprite(game->renderer, game->world.pipes[i].texture, &game->world.pipes[i].rect);
 		
 		SDL_Rect upper_pipe_rect = game->world.pipes[i].rect;
 		upper_pipe_rect.y -= upper_pipe_rect.h + PIPE_GAP;
 		
-		render_sprite(game->renderer, game->world.pipes[i].texture, &upper_pipe_rect, 0, SDL_FLIP_VERTICAL);
+		render_sprite_ex(game->renderer, game->world.pipes[i].texture, &upper_pipe_rect, 0, SDL_FLIP_VERTICAL);
 	}
 
-	render_sprite(game->renderer, game->world.grounds[0].texture, &game->world.grounds[0].rect, 0, SDL_FLIP_NONE);
-	render_sprite(game->renderer, game->world.grounds[1].texture, &game->world.grounds[1].rect, 0, SDL_FLIP_NONE);
+	render_sprite(game->renderer, game->world.grounds[0].texture, &game->world.grounds[0].rect);
+	render_sprite(game->renderer, game->world.grounds[1].texture, &game->world.grounds[1].rect);
 
-	render_sprite(game->renderer, game->world.bird.texture, &game->world.bird.rect, game->world.bird.angle, SDL_FLIP_NONE);
+	render_sprite_ex(game->renderer, game->world.bird.texture, &game->world.bird.rect, game->world.bird.angle, SDL_FLIP_NONE);
 
-	render_overlay(game->renderer, game->game_over_overlay.background_color, (Uint8)game->game_over_overlay.overlay_alpha);
+	render_overlay_background(game->renderer, game->game_over_overlay.background_color, (Uint8)game->game_over_overlay.overlay_alpha);
 
-	render_sprite(game->renderer, game->game_over_overlay.restart_text_texture, &game->game_over_overlay.restart_text_rect, 0, SDL_FLIP_NONE);
-	render_sprite(game->renderer, game->game_over_overlay.score_text_texture, &game->game_over_overlay.score_text_rect, 0, SDL_FLIP_NONE);
+	render_sprite(game->renderer, game->game_over_overlay.restart_text_texture, &game->game_over_overlay.restart_text_rect);
+	render_sprite(game->renderer, game->game_over_overlay.score_text_texture, &game->game_over_overlay.score_text_rect);
 }
 
 void update_game_over(Game *game)
@@ -281,6 +294,9 @@ bool game_create(Game *game)
 		return false;
 	}
 
+	create_game_over_overlay(game);
+	create_menu(game);
+
 	game_restart(game);
 	
 	return true;
@@ -288,7 +304,7 @@ bool game_create(Game *game)
 
 void init_game_values(Game *game)
 {
-	game->state = PLAYING;
+	game->state = MENU;
 	game->is_running = true;
 	game->action.quit = false;
 	game->action.jump = false;
@@ -319,13 +335,11 @@ bool create_game_world(Game *game)
 
 	return true;
 }
-// TODO: create init game overlay and update game overlay separately
+
 void create_game_over_overlay(Game *game)
 {
 	game->game_over_overlay.restart_text_texture = NULL;
 	game->game_over_overlay.score_text_texture = NULL;
-	
-	game->game_over_overlay.overlay_alpha = 0.0;
 
 	SDL_Color black = {0, 0, 0, 255};
 	game->game_over_overlay.background_color = black;
@@ -336,6 +350,12 @@ void create_game_over_overlay(Game *game)
 											
 	game->game_over_overlay.restart_text_rect.x = (WINDOW_WIDTH / 2) - (game->game_over_overlay.restart_text_rect.w / 2);
 	game->game_over_overlay.restart_text_rect.y = (WINDOW_HEIGHT / 2) - (game->game_over_overlay.restart_text_rect.h / 2);
+}
+
+void update_game_over_overlay(Game *game)
+{
+	SDL_Color white = {255, 255, 255, 255};
+	game->game_over_overlay.overlay_alpha = 0.0;
 
 	char score_text[32];
 	snprintf(score_text, sizeof(score_text), "Score: %d", game->score);
@@ -352,8 +372,60 @@ void destroy_game_over_overlay(Game *game)
 	SDL_DestroyTexture(game->game_over_overlay.score_text_texture);
 }
 
+void update_menu(Game *game)
+{
+	update_grounds(&game->world.grounds[0], &game->world.grounds[1], game->deltaTime);
+	update_bird_anim(&game->world.bird, game->assets.textures.bird, game->deltaTime);
+
+	
+}
+
+void render_menu(Game *game)
+{
+	render_background(game->renderer, game->assets.textures.background);
+
+	render_sprite(game->renderer, game->world.grounds[0].texture, &game->world.grounds[0].rect);
+	render_sprite(game->renderer, game->world.grounds[1].texture, &game->world.grounds[1].rect);
+
+	render_sprite(game->renderer, game->world.bird.texture, &game->world.bird.rect);
+
+	render_overlay_background(game->renderer, game->menu_overlay.background_color, game->menu_overlay.background_color.a);
+	
+	render_sprite(game->renderer, game->menu_overlay.start_text_texture, &game->menu_overlay.start_text_rect);
+	render_sprite(game->renderer, game->menu_overlay.title_text_texture, &game->menu_overlay.title_text_rect);
+}
+
+void create_menu(Game *game)
+{
+	game->menu_overlay.title_text_texture = NULL;
+	game->menu_overlay.start_text_texture = NULL;
+
+	SDL_Color black = {0, 0, 0, 210};
+	game->menu_overlay.background_color = black;
+
+	SDL_Color white = {255, 255, 255, 255};
+	update_text_texture(game->renderer, game->assets.fonts.main_font, "Start", white, 0, 0, 
+											&game->menu_overlay.start_text_texture, &game->menu_overlay.start_text_rect);
+											
+	game->menu_overlay.start_text_rect.x = (WINDOW_WIDTH / 2) - (game->menu_overlay.start_text_rect.w / 2);
+	game->menu_overlay.start_text_rect.y = (WINDOW_HEIGHT / 2) - (game->menu_overlay.start_text_rect.h / 2);
+
+	update_text_texture(game->renderer, game->assets.fonts.title_font, "Flappy Bird", white, 0, 0, 
+											&game->menu_overlay.title_text_texture, &game->menu_overlay.title_text_rect);
+											
+	game->menu_overlay.title_text_rect.x = (WINDOW_WIDTH / 2) - (game->menu_overlay.title_text_rect.w / 2);
+	game->menu_overlay.title_text_rect.y = 200;
+}
+
+void destroy_menu(Game *game)
+{
+	SDL_DestroyTexture(game->menu_overlay.title_text_texture);
+	SDL_DestroyTexture(game->menu_overlay.start_text_texture);
+}
+
 void game_destroy(Game *game)
 {
+	destroy_menu(game);
 	destroy_game_over_overlay(game);
 	deinit_audio();
 	destroy_assets(&game->assets);

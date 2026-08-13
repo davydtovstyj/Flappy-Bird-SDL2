@@ -65,6 +65,10 @@ bool load_assets(SDL_Renderer *renderer, Assets *assets)
 	if (assets->fonts.main_font == NULL)
 		return false;
 
+	assets->fonts.title_font = load_font("assets/fonts/flappy-font.ttf", TITLE_TEXT_SIZE);
+	if (assets->fonts.title_font == NULL)
+		return false;
+
 	return true;
 }
 
@@ -94,6 +98,7 @@ TTF_Font *load_font(const char *path, int ptsize)
 
 void destroy_assets(Assets *assets)
 {
+	TTF_CloseFont(assets->fonts.title_font);
 	TTF_CloseFont(assets->fonts.main_font);
 
 	destroy_sound_wav(assets->sounds.bird_jump);

@@ -22,6 +22,7 @@ typedef struct {
 
 typedef struct {
 	TTF_Font *main_font;
+	TTF_Font *title_font;
 } Fonts;
 
 typedef struct

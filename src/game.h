@@ -10,7 +10,7 @@
 
 typedef enum 
 {
-//	MENU,
+	MENU,
 	PLAYING,
 	GAME_OVER
 } State;
@@ -34,6 +34,18 @@ typedef struct
 	double overlay_alpha;
 } GameOverOverlay;
 
+typedef struct
+{
+	SDL_Color background_color;
+	
+	SDL_Texture *title_text_texture;
+	SDL_Rect title_text_rect;
+	SDL_Texture *start_text_texture;
+	SDL_Rect start_text_rect;
+
+	double overlay_alpha;
+} MenuOverlay;
+
 typedef struct 
 {
 	SDL_Window *window;
@@ -54,13 +66,22 @@ typedef struct
 	int score;
 
 	GameOverOverlay game_over_overlay;
+	MenuOverlay menu_overlay;
 } Game;
 
 bool game_create(Game *game);
 void init_game_values(Game *game);
 bool create_game_world(Game *game);
+
 void create_game_over_overlay(Game *game);
 void destroy_game_over_overlay(Game *game);
+void update_game_over_overlay(Game *game);
+
+void update_menu(Game *game);
+void render_menu(Game *game);
+void create_menu(Game *game);
+void destroy_menu(Game *game);
+
 void game_destroy(Game *game);
 
 void game_loop(Game *game);

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 3.16)
 project(FlappyBird C)
 
 find_package(SDL2 REQUIRED)
@@ -6,8 +6,14 @@ find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 
-file(GLOB_RECURSE SOURCES
-  src/*.c
+set(SOURCES
+  src/assets.c
+  src/audio.c
+  src/game.c
+  src/input.c
+  src/main.c
+  src/render.c
+  src/sprites.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

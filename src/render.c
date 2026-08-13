@@ -14,10 +14,14 @@ void render_clear(SDL_Renderer *renderer)
 	SDL_RenderClear(renderer);
 }
 
-void render_sprite(SDL_Renderer *renderer, SDL_Texture *sprite, SDL_Rect *sprite_rect, const double angle, SDL_RendererFlip flip)
+void render_sprite_ex(SDL_Renderer *renderer, SDL_Texture *sprite, SDL_Rect *sprite_rect, const double angle, SDL_RendererFlip flip)
 {
-	if (sprite != NULL)
-		SDL_RenderCopyEx(renderer, sprite, NULL, sprite_rect, angle, NULL, flip);
+	SDL_RenderCopyEx(renderer, sprite, NULL, sprite_rect, angle, NULL, flip);
+}
+
+void render_sprite(SDL_Renderer *renderer, SDL_Texture *sprite, SDL_Rect *sprite_rect)
+{
+	SDL_RenderCopy(renderer, sprite, NULL, sprite_rect);
 }
 
 void render_background(SDL_Renderer *renderer, SDL_Texture *background)
@@ -47,7 +51,7 @@ void update_text_texture(SDL_Renderer *renderer, TTF_Font *font, const char *tex
 	SDL_FreeSurface(surface);
 }
 
-void render_overlay(SDL_Renderer *renderer, SDL_Color color, int alpha)
+void render_overlay_background(SDL_Renderer *renderer, SDL_Color color, int alpha)
 {
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -94,10 +98,11 @@ SDL_Window *create_window()
 		WINDOW_TITLE, 
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		WINDOW_WIDTH/3,  // TODO: calculate window scale
-		WINDOW_HEIGHT/3, // depending on screen size
+		WINDOW_WIDTH/2.5,
+		WINDOW_HEIGHT/2.5, 
 		WINDOW_FLAGS
 		);
+	
 	if (window == NULL)
 	{
 		fprintf(stderr, "Error creating window: %s\n", SDL_GetError());
